@@ -5,7 +5,8 @@
       <div>
         <base-button @click="loadExp">Load Submitted Experiences</base-button>
       </div>
-      <ul>
+      <p v-if="isLoading">Loading...</p>
+      <ul v-if="!isLoading">
         <survey-result
           v-for="result in results"
           :key="result.id"
@@ -26,17 +27,23 @@ export default {
   },
   data(){
     return{
-      results: []
+      results: [],
+      isLoading: false
     }
+  },
+  mounted(){
+    this.loadExp()
   },
   methods:{
     loadExp(){
+      this.isLoading = true
       fetch('https://vue-http-aea9f-default-rtdb.firebaseio.com/surveys.json')
       .then((response) => {
         if(response.ok){
           return response.json()
         }
       }).then((data) => {
+        this.isLoading = false
         const results = [];
 
         for(const id in data){
